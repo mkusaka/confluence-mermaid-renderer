@@ -50,6 +50,7 @@
 
 .confluence-mermaid-renderer-viewport {
   max-width: 100%;
+  max-height: min(70vh, 720px);
   overflow: auto;
   cursor: grab;
 }
@@ -95,7 +96,8 @@
   max-width: 100%;
 }
 
-.confluence-mermaid-renderer-side-by-side > .confluence-mermaid-renderer-preview {
+.confluence-mermaid-renderer-side-by-side
+  > .confluence-mermaid-renderer-preview {
   margin-top: 0;
 }
 

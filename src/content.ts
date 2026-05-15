@@ -18,10 +18,18 @@ const SCAN_DEBOUNCE_MS = 250;
 const MIN_ZOOM = 0.01;
 const ZOOM_LEVELS = [0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3] as const;
 const FIT_WIDTH_MARGIN_PX = 4;
+const FIT_HEIGHT_MARGIN_PX = 4;
+const FIT_MAX_VIEWPORT_HEIGHT_RATIO = 0.7;
+const FIT_MAX_VIEWPORT_HEIGHT_PX = 720;
 const ZOOM_EPSILON = 0.001;
 
 type RenderLayout = "below" | "side-by-side";
 type RenderState = "pending" | "rendered" | "error" | "ignored";
+
+type SvgBaseSize = {
+  height: number;
+  width: number;
+};
 
 type PreviewFrame = {
   canvas: HTMLElement;
@@ -39,8 +47,13 @@ let renderCounter = 0;
 let scanTimer: number | undefined;
 
 mermaid.initialize({
+  htmlLabels: false,
   startOnLoad: false,
   securityLevel: "strict",
+  flowchart: {
+    diagramPadding: 12,
+    useMaxWidth: false,
+  },
 });
 
 export function findCodeBlocks(root: ParentNode = document): HTMLElement[] {
@@ -79,7 +92,9 @@ export async function isMermaidSource(source: string): Promise<boolean> {
   }
 
   try {
-    const parseResult = await mermaid.parse(normalizedSource, { suppressErrors: true });
+    const parseResult = await mermaid.parse(normalizedSource, {
+      suppressErrors: true,
+    });
     return parseResult !== false;
   } catch {
     return false;
@@ -92,14 +107,18 @@ export async function renderMermaidBlock(
 ): Promise<void> {
   const source = getCodeText(codeElement);
   const sourceKey = stableSourceKey(source);
-  const currentState = codeElement.getAttribute(PROCESSED_ATTR) as RenderState | null;
+  const currentState = codeElement.getAttribute(
+    PROCESSED_ATTR,
+  ) as RenderState | null;
 
-  if (
-    currentState &&
-    codeElement.getAttribute(SOURCE_ATTR) === sourceKey &&
-    (currentState === "ignored" || getExistingPreview(codeElement))
-  ) {
-    return;
+  if (currentState && codeElement.getAttribute(SOURCE_ATTR) === sourceKey) {
+    if (
+      currentState === "pending" ||
+      currentState === "ignored" ||
+      getExistingPreview(codeElement)
+    ) {
+      return;
+    }
   }
 
   removeExistingPreview(codeElement);
@@ -118,7 +137,9 @@ export async function renderMermaidBlock(
     const renderId = `confluence-mermaid-renderer-${Date.now()}-${renderCounter++}`;
     const { svg } = await mermaid.render(renderId, source);
 
-    frame.preview.classList.remove("confluence-mermaid-renderer-preview--error");
+    frame.preview.classList.remove(
+      "confluence-mermaid-renderer-preview--error",
+    );
     frame.canvas.replaceChildren();
     frame.canvas.insertAdjacentHTML("afterbegin", svg);
     setupZoomControls(frame);
@@ -182,7 +203,9 @@ function hasMermaidStartDirective(source: string): boolean {
     return false;
   }
 
-  return MERMAID_START_PATTERNS.some((pattern) => pattern.test(firstMeaningfulLine));
+  return MERMAID_START_PATTERNS.some((pattern) =>
+    pattern.test(firstMeaningfulLine),
+  );
 }
 
 function getFirstMeaningfulLine(source: string): string {
@@ -193,7 +216,7 @@ function getFirstMeaningfulLine(source: string): string {
       continue;
     }
 
-    if (/^%%/.test(line)) {
+    if (line.startsWith("%%")) {
       continue;
     }
 
@@ -228,7 +251,10 @@ function createPreviewFrame(): PreviewFrame {
   zoomLabel.setAttribute("aria-live", "polite");
 
   const zoomInButton = createToolbarButton("+", "Zoom in Mermaid preview");
-  const resetButton = createToolbarButton("Fit", "Fit Mermaid preview to width");
+  const resetButton = createToolbarButton(
+    "Fit",
+    "Fit Mermaid preview to width",
+  );
 
   toolbar.append(zoomOutButton, zoomLabel, zoomInButton, resetButton);
 
@@ -281,7 +307,10 @@ function insertPreview(
   container.after(preview);
 }
 
-function insertSideBySidePreview(container: HTMLElement, preview: HTMLElement): void {
+function insertSideBySidePreview(
+  container: HTMLElement,
+  preview: HTMLElement,
+): void {
   if (container.parentElement?.hasAttribute(SIDE_BY_SIDE_ATTR)) {
     container.parentElement.append(preview);
     return;
@@ -302,21 +331,27 @@ function removeExistingPreview(codeElement: HTMLElement): void {
     return;
   }
 
-  const sideBySideContainer = preview.parentElement?.hasAttribute(SIDE_BY_SIDE_ATTR)
+  const sideBySideContainer = preview.parentElement?.hasAttribute(
+    SIDE_BY_SIDE_ATTR,
+  )
     ? preview.parentElement
     : null;
 
   preview.remove();
 
   if (sideBySideContainer && sideBySideContainer.children.length === 1) {
-    sideBySideContainer.before(sideBySideContainer.firstElementChild as Element);
+    sideBySideContainer.before(
+      sideBySideContainer.firstElementChild as Element,
+    );
     sideBySideContainer.remove();
   }
 }
 
 function getExistingPreview(codeElement: HTMLElement): HTMLElement | null {
   const container = getCodeBlockContainer(codeElement);
-  const sideBySideContainer = container.parentElement?.hasAttribute(SIDE_BY_SIDE_ATTR)
+  const sideBySideContainer = container.parentElement?.hasAttribute(
+    SIDE_BY_SIDE_ATTR,
+  )
     ? container.parentElement
     : null;
 
@@ -326,7 +361,10 @@ function getExistingPreview(codeElement: HTMLElement): HTMLElement | null {
 
   const nextElement = container.nextElementSibling;
 
-  if (nextElement instanceof HTMLElement && nextElement.hasAttribute(PREVIEW_ATTR)) {
+  if (
+    nextElement instanceof HTMLElement &&
+    nextElement.hasAttribute(PREVIEW_ATTR)
+  ) {
     return nextElement;
   }
 
@@ -340,8 +378,8 @@ function setupZoomControls(frame: PreviewFrame): void {
     return;
   }
 
-  const baseWidth = getSvgBaseWidth(svg, frame.viewport);
-  frame.fitZoom = getFitZoom(baseWidth, frame.viewport);
+  const baseSize = getSvgBaseSize(svg, frame.viewport);
+  frame.fitZoom = getFitZoom(baseSize, frame.viewport);
   frame.currentZoom = frame.fitZoom;
 
   const applyCurrentZoom = (previousZoom: number = frame.currentZoom) => {
@@ -356,10 +394,12 @@ function setupZoomControls(frame: PreviewFrame): void {
     frame.zoomInButton.disabled =
       currentZoom >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1] - ZOOM_EPSILON;
     frame.resetButton.disabled = isSameZoom(currentZoom, frame.fitZoom);
-    applySvgZoom(svg, currentZoom, baseWidth);
+    applySvgZoom(svg, currentZoom, baseSize);
 
-    frame.viewport.scrollLeft = centerX * scaleChange - frame.viewport.clientWidth / 2;
-    frame.viewport.scrollTop = centerY * scaleChange - frame.viewport.clientHeight / 2;
+    frame.viewport.scrollLeft =
+      centerX * scaleChange - frame.viewport.clientWidth / 2;
+    frame.viewport.scrollTop =
+      centerY * scaleChange - frame.viewport.clientHeight / 2;
   };
 
   const setZoom = (nextZoom: number) => {
@@ -380,20 +420,83 @@ function setupZoomControls(frame: PreviewFrame): void {
     setZoom(frame.fitZoom);
   });
 
+  observeViewportResize(frame, baseSize, applyCurrentZoom);
   applyCurrentZoom(frame.fitZoom);
 }
 
-function applySvgZoom(svg: SVGSVGElement, zoom: number, baseWidth: number): void {
-  svg.setAttribute("data-confluence-mermaid-renderer-base-width", baseWidth.toString());
-  svg.style.width = `${Math.max(1, Math.round(baseWidth * zoom))}px`;
-  svg.style.maxWidth = "none";
-  svg.style.height = "auto";
+function observeViewportResize(
+  frame: PreviewFrame,
+  baseSize: SvgBaseSize,
+  applyZoom: (previousZoom?: number) => void,
+): void {
+  let resizeFrame: number | undefined;
+
+  const resizeObserver = new ResizeObserver(() => {
+    if (resizeFrame !== undefined) {
+      return;
+    }
+
+    resizeFrame = window.requestAnimationFrame(() => {
+      resizeFrame = undefined;
+
+      if (!frame.preview.isConnected) {
+        resizeObserver.disconnect();
+        return;
+      }
+
+      const previousZoom = frame.currentZoom;
+      const wasFit = isSameZoom(frame.currentZoom, frame.fitZoom);
+      frame.fitZoom = getFitZoom(baseSize, frame.viewport);
+
+      if (wasFit) {
+        frame.currentZoom = frame.fitZoom;
+      }
+
+      applyZoom(previousZoom);
+    });
+  });
+
+  resizeObserver.observe(frame.viewport);
 }
 
-function getFitZoom(baseWidth: number, viewport: HTMLElement): number {
-  const availableWidth = Math.max(1, viewport.clientWidth - FIT_WIDTH_MARGIN_PX);
+function applySvgZoom(
+  svg: SVGSVGElement,
+  zoom: number,
+  baseSize: SvgBaseSize,
+): void {
+  svg.setAttribute(
+    "data-confluence-mermaid-renderer-base-width",
+    baseSize.width.toString(),
+  );
+  svg.setAttribute(
+    "data-confluence-mermaid-renderer-base-height",
+    baseSize.height.toString(),
+  );
+  svg.style.width = `${Math.max(1, Math.round(baseSize.width * zoom))}px`;
+  svg.style.height = `${Math.max(1, Math.round(baseSize.height * zoom))}px`;
+  svg.style.maxWidth = "none";
+}
 
-  return clampZoom(Math.min(1, availableWidth / baseWidth));
+function getFitZoom(baseSize: SvgBaseSize, viewport: HTMLElement): number {
+  const availableWidth = Math.max(
+    1,
+    viewport.clientWidth - FIT_WIDTH_MARGIN_PX,
+  );
+  const availableHeight = Math.max(
+    1,
+    getAvailableFitHeight() - FIT_HEIGHT_MARGIN_PX,
+  );
+  const widthZoom = availableWidth / baseSize.width;
+  const heightZoom = availableHeight / baseSize.height;
+
+  return clampZoom(Math.min(1, widthZoom, heightZoom));
+}
+
+function getAvailableFitHeight(): number {
+  return Math.min(
+    FIT_MAX_VIEWPORT_HEIGHT_PX,
+    Math.max(1, window.innerHeight * FIT_MAX_VIEWPORT_HEIGHT_RATIO),
+  );
 }
 
 function getZoomLabel(zoom: number, fitZoom: number): string {
@@ -427,38 +530,85 @@ function getNextZoom(currentZoom: number): number {
 }
 
 function clampZoom(zoom: number): number {
-  return Math.max(MIN_ZOOM, Math.min(ZOOM_LEVELS[ZOOM_LEVELS.length - 1], zoom));
+  return Math.max(
+    MIN_ZOOM,
+    Math.min(ZOOM_LEVELS[ZOOM_LEVELS.length - 1], zoom),
+  );
 }
 
 function isSameZoom(left: number, right: number): boolean {
   return Math.abs(left - right) < ZOOM_EPSILON;
 }
 
-function getSvgBaseWidth(svg: SVGSVGElement, viewport: HTMLElement): number {
-  const storedWidth = Number(svg.getAttribute("data-confluence-mermaid-renderer-base-width"));
+function getSvgBaseSize(
+  svg: SVGSVGElement,
+  viewport: HTMLElement,
+): SvgBaseSize {
+  const storedWidth = Number(
+    svg.getAttribute("data-confluence-mermaid-renderer-base-width"),
+  );
+  const storedHeight = Number(
+    svg.getAttribute("data-confluence-mermaid-renderer-base-height"),
+  );
 
-  if (Number.isFinite(storedWidth) && storedWidth > 0) {
-    return storedWidth;
+  if (
+    Number.isFinite(storedWidth) &&
+    storedWidth > 0 &&
+    Number.isFinite(storedHeight) &&
+    storedHeight > 0
+  ) {
+    return {
+      height: storedHeight,
+      width: storedWidth,
+    };
   }
 
   const viewBox = svg.getAttribute("viewBox")?.trim().split(/\s+/).map(Number);
   const viewBoxWidth = viewBox?.[2];
+  const viewBoxHeight = viewBox?.[3];
 
-  if (viewBoxWidth && Number.isFinite(viewBoxWidth) && viewBoxWidth > 0) {
-    return viewBoxWidth;
+  if (
+    viewBoxWidth &&
+    Number.isFinite(viewBoxWidth) &&
+    viewBoxWidth > 0 &&
+    viewBoxHeight &&
+    Number.isFinite(viewBoxHeight) &&
+    viewBoxHeight > 0
+  ) {
+    return {
+      height: viewBoxHeight,
+      width: viewBoxWidth,
+    };
   }
 
-  const widthAttribute = svg.getAttribute("width");
+  const widthAttribute = parseSvgLength(svg.getAttribute("width"));
+  const heightAttribute = parseSvgLength(svg.getAttribute("height"));
 
-  if (widthAttribute && !widthAttribute.endsWith("%")) {
-    const parsedWidth = Number.parseFloat(widthAttribute);
-
-    if (Number.isFinite(parsedWidth) && parsedWidth > 0) {
-      return parsedWidth;
-    }
+  if (widthAttribute && heightAttribute) {
+    return {
+      height: heightAttribute,
+      width: widthAttribute,
+    };
   }
 
-  return svg.getBoundingClientRect().width || viewport.clientWidth || 800;
+  const rect = svg.getBoundingClientRect();
+
+  return {
+    height: heightAttribute || rect.height || viewport.clientHeight || 600,
+    width: widthAttribute || rect.width || viewport.clientWidth || 800,
+  };
+}
+
+function parseSvgLength(value: string | null): number | undefined {
+  if (!value || value.endsWith("%")) {
+    return undefined;
+  }
+
+  const parsedValue = Number.parseFloat(value);
+
+  return Number.isFinite(parsedValue) && parsedValue > 0
+    ? parsedValue
+    : undefined;
 }
 
 function enableDragPan(viewport: HTMLElement): void {
@@ -512,8 +662,10 @@ function enableDragPan(viewport: HTMLElement): void {
       return;
     }
 
-    viewport.scrollLeft = dragState.scrollLeft - (event.clientX - dragState.startX);
-    viewport.scrollTop = dragState.scrollTop - (event.clientY - dragState.startY);
+    viewport.scrollLeft =
+      dragState.scrollLeft - (event.clientX - dragState.startX);
+    viewport.scrollTop =
+      dragState.scrollTop - (event.clientY - dragState.startY);
     event.preventDefault();
   });
 
@@ -523,7 +675,10 @@ function enableDragPan(viewport: HTMLElement): void {
 }
 
 function isScrollable(element: HTMLElement): boolean {
-  return element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
+  return (
+    element.scrollWidth > element.clientWidth ||
+    element.scrollHeight > element.clientHeight
+  );
 }
 
 function renderError(preview: HTMLElement, error: unknown): void {
@@ -582,5 +737,5 @@ function stableSourceKey(source: string): string {
   return hash.toString(36);
 }
 
-scanAndRender();
 observePageChanges();
+scheduleScan();

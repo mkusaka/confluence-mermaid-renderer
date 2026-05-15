@@ -7,19 +7,19 @@ Confluence Cloud のレンダリング後 DOM では、Mermaid fenced code block
 ## Requirements
 
 - Node.js
-- npm
+- pnpm 11
 - Chrome
 
 ## Install
 
 ```sh
-npm install
+pnpm install
 ```
 
 ## Build
 
 ```sh
-npm run build
+pnpm build
 ```
 
 Build output is written to `dist/`.
@@ -57,17 +57,22 @@ On the rendered page, the extension scans code blocks matching selectors such as
 
 If the trimmed text starts with a supported Mermaid directive and `mermaid.parse` accepts it, a preview is inserted below the source block. Non-Mermaid text blocks are ignored. Mermaid render errors are shown inline next to the relevant block.
 
-Each rendered preview defaults to fitting the diagram width into the preview. Use the zoom controls to enlarge or shrink it; when the diagram is larger than the preview viewport, drag inside the preview to pan around it. The Fit button resets the diagram back to the fitted size.
+Each rendered preview defaults to fitting the whole diagram into the preview width and height. Fit is recalculated when the preview size changes, such as after resizing the browser window. Use the zoom controls to enlarge or shrink it; when the diagram is larger than the preview viewport, drag inside the preview to pan around it. The Fit button resets the diagram back to the fitted size.
+
+Flowchart labels are rendered as SVG labels instead of HTML labels to reduce clipping caused by host page CSS in Confluence.
 
 ## Development
 
 ```sh
-npm run typecheck
-npm run build
-npm run check
+pnpm format
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm check
 ```
 
-`npm run check` runs TypeScript type checking and then builds the extension.
+`pnpm check` runs formatting check, lint, TypeScript type checking, and then builds the extension.
 
 The default rendering layout is below the code block because it is less fragile in Confluence page layouts. A side-by-side insertion path exists in the content script and can be enabled by changing `RENDER_LAYOUT` in `src/content.ts` to `"side-by-side"`.
 

@@ -69,10 +69,22 @@ pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm package
 pnpm check
 ```
 
 `pnpm check` runs formatting check, lint, TypeScript type checking, and then builds the extension.
+
+`pnpm package` builds the extension and writes a Chrome extension package to `package.zip`.
+
+GitHub Actions workflow checks:
+
+```sh
+go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+go run github.com/suzuki-shunsuke/ghalint/cmd/ghalint@v1.5.6 run
+go run github.com/suzuki-shunsuke/pinact/v3/cmd/pinact@v3.10.0 run --check
+uvx zizmor==1.25.0 --format=plain --collect=workflows .
+```
 
 The default rendering layout is below the code block because it is less fragile in Confluence page layouts. A side-by-side insertion path exists in the content script and can be enabled by changing `RENDER_LAYOUT` in `src/content.ts` to `"side-by-side"`.
 

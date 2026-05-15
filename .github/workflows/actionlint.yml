@@ -2,17 +2,55 @@ name: Lint GitHub Actions workflows
 
 on: push
 
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   actionlint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
-      - name: Download actionlint
-        id: get_actionlint
-        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-        shell: bash
+      - name: Setup Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version: "1.26"
 
-      - name: Check workflow files
-        run: ${{ steps.get_actionlint.outputs.executable }} -color
-        shell: bash
+      - name: Setup uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+
+      - name: Configure Go tools path
+        env:
+          GO_BIN: ${{ runner.temp }}/go-bin
+        run: |
+          mkdir -p "${GO_BIN}"
+          echo "GOBIN=${GO_BIN}" >> "${GITHUB_ENV}"
+          echo "${GO_BIN}" >> "${GITHUB_PATH}"
+
+      - name: Install workflow lint tools
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          go install github.com/suzuki-shunsuke/ghalint/cmd/ghalint@v1.5.6
+          go install github.com/suzuki-shunsuke/pinact/v3/cmd/pinact@v3.10.0
+
+      - name: Run actionlint
+        run: actionlint -color
+
+      - name: Run ghalint
+        run: ghalint run
+
+      - name: Check action pinning
+        run: pinact run --check
+
+      - name: Run zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uvx zizmor==1.25.0 --format=github --collect=workflows .

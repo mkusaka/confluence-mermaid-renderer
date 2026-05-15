@@ -13,6 +13,7 @@
     "lint": "oxlint . --import-plugin --tsconfig ./tsconfig.json",
     "lint:ci": "oxlint . --import-plugin --tsconfig ./tsconfig.json --deny-warnings",
     "lint:fix": "oxlint . --import-plugin --tsconfig ./tsconfig.json --fix",
+    "package": "pnpm build && cd dist && zip -r -FS ../package.zip .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Confluence Mermaid Renderer icon">
+  <rect width="128" height="128" rx="28" fill="#0c66e4"/>
+  <rect x="18" y="24" width="38" height="32" rx="9" fill="#e9f2ff"/>
+  <rect x="72" y="24" width="38" height="32" rx="9" fill="#e3fcef"/>
+  <rect x="45" y="72" width="38" height="32" rx="9" fill="#f3f0ff"/>
+  <line x1="56" y1="40" x2="72" y2="40" stroke="#ffab00" stroke-width="7" stroke-linecap="round"/>
+  <polyline points="65,33 72,40 65,47" fill="none" stroke="#ffab00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="64" y1="56" x2="64" y2="72" stroke="#ffab00" stroke-width="7" stroke-linecap="round"/>
+  <polyline points="57,65 64,72 71,65" fill="none" stroke="#ffab00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M27 40h20M81 40h20M54 88h20" fill="none" stroke="#172b4d" stroke-width="6" stroke-linecap="round"/>
+</svg>

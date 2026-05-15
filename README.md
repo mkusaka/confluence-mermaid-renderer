@@ -1,8 +1,6 @@
 # confluence-mermaid-renderer
 
-Manifest V3 Chrome extension that detects Mermaid-looking Confluence code blocks on Confluence Cloud page views and renders a Mermaid preview below each matching block.
-
-Confluence Cloud may render Mermaid fenced code blocks as `language-text` instead of preserving `language-mermaid` in the page DOM. This extension does not rely only on language metadata; it checks Confluence code block selectors and the leading directive in the source text to identify Mermaid source.
+Chrome extension that renders Mermaid diagrams in Confluence Cloud code blocks.
 
 ## Requirements
 
@@ -22,9 +20,9 @@ pnpm install
 pnpm build
 ```
 
-Build output is written to `dist/`.
+Build output is written to `dist/`. The extension manifest is generated from `src/manifest.ts`, and content styles are imported from `src/content.ts` so Vite emits the CSS used by the content script.
 
-The JavaScript bundle is emitted as ASCII-only output so Chrome can load it reliably as a content script.
+The JavaScript bundle is emitted as ASCII-only output so Chrome can load it reliably.
 
 ## Load the extension in Chrome
 
@@ -68,6 +66,7 @@ pnpm format
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm icons:generate
 pnpm build
 pnpm package
 pnpm check
@@ -76,6 +75,8 @@ pnpm check
 `pnpm check` runs formatting check, lint, TypeScript type checking, and then builds the extension.
 
 `pnpm package` builds the extension and writes a Chrome extension package to `package.zip`.
+
+Icon PNGs are generated from `assets/icon.svg` into `public/icons/`. Regenerating them requires ImageMagick's `magick` command.
 
 GitHub Actions workflow checks:
 

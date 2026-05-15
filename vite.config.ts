@@ -1,15 +1,11 @@
-import { resolve } from "node:path";
+import { crx } from "@crxjs/vite-plugin";
 import { defineConfig } from "vite";
+import manifest from "./src/manifest";
 
 export default defineConfig({
+  plugins: [crx({ manifest })],
   build: {
     emptyOutDir: true,
-    lib: {
-      entry: resolve(__dirname, "src/content.ts"),
-      formats: ["iife"],
-      fileName: () => "content.js",
-      name: "ConfluenceMermaidRenderer",
-    },
     minify: "terser",
     outDir: "dist",
     terserOptions: {

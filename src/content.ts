@@ -1,3 +1,4 @@
+import "./content.css";
 import mermaid from "mermaid";
 
 const CODE_BLOCK_SELECTORS = [

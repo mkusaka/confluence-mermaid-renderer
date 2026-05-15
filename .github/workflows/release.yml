@@ -102,7 +102,7 @@ jobs:
         run: |
           gh release create "${RELEASE_TAG}" \
             --verify-tag \
-            --title "Release ${RELEASE_TAG}" \
+            --title "${RELEASE_TAG}" \
             --notes-file release_notes.md \
             "confluence-mermaid-renderer-v${RELEASE_VERSION}.zip"
 

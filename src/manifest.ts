@@ -7,7 +7,6 @@ export default defineManifest({
   description: "Render Mermaid diagrams in Confluence Cloud code blocks.",
   version: packageJson.version,
   permissions: [],
-  host_permissions: ["https://*.atlassian.net/wiki/*"],
   icons: {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",

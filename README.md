@@ -1,8 +1,8 @@
 # confluence-mermaid-renderer
 
-Confluence Cloud のページ表示画面で、Mermaid らしい Confluence code block を検出し、各 block の下に Mermaid preview を表示する Manifest V3 Chrome Extension です。
+Manifest V3 Chrome extension that detects Mermaid-looking Confluence code blocks on Confluence Cloud page views and renders a Mermaid preview below each matching block.
 
-Confluence Cloud のレンダリング後 DOM では、Mermaid fenced code block が `language-mermaid` ではなく `language-text` として表示されることがあります。この extension は language metadata だけに依存せず、Confluence の code block selector と source text の先頭 directive を見て Mermaid source を判定します。
+Confluence Cloud may render Mermaid fenced code blocks as `language-text` instead of preserving `language-mermaid` in the page DOM. This extension does not rely only on language metadata; it checks Confluence code block selectors and the leading directive in the source text to identify Mermaid source.
 
 ## Requirements
 

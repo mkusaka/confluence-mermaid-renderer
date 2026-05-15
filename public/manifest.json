@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Confluence Mermaid Renderer",
+  "description": "Render Mermaid-looking Confluence code blocks on Confluence Cloud page views.",
+  "version": "0.1.0",
+  "permissions": [],
+  "host_permissions": [
+    "https://*.atlassian.net/wiki/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.atlassian.net/wiki/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
+

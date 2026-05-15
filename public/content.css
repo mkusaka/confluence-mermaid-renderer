@@ -1,0 +1,110 @@
+.confluence-mermaid-renderer-preview {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 12px 0 16px;
+  padding: 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172b4d;
+  overflow: hidden;
+}
+
+.confluence-mermaid-renderer-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 8px;
+}
+
+.confluence-mermaid-renderer-toolbar-button {
+  min-width: 32px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  background: #f7f8f9;
+  color: #172b4d;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.confluence-mermaid-renderer-toolbar-button:hover:not(:disabled) {
+  background: #eef2f6;
+}
+
+.confluence-mermaid-renderer-toolbar-button:disabled {
+  color: #7a869a;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.confluence-mermaid-renderer-zoom-label {
+  min-width: 64px;
+  color: #44546f;
+  font-size: 12px;
+  text-align: center;
+}
+
+.confluence-mermaid-renderer-viewport {
+  max-width: 100%;
+  overflow: auto;
+  cursor: grab;
+}
+
+.confluence-mermaid-renderer-viewport--dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.confluence-mermaid-renderer-canvas {
+  display: inline-block;
+  min-width: 100%;
+}
+
+.confluence-mermaid-renderer-preview svg {
+  display: block;
+  height: auto;
+  max-width: none;
+}
+
+.confluence-mermaid-renderer-preview--error {
+  border-color: #ff8f73;
+  background: #fff4f0;
+  color: #ae2a19;
+  overflow-x: auto;
+}
+
+.confluence-mermaid-renderer-error-title {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.confluence-mermaid-renderer-error-message {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.confluence-mermaid-renderer-side-by-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 1fr);
+  gap: 12px;
+  align-items: start;
+  max-width: 100%;
+}
+
+.confluence-mermaid-renderer-side-by-side > .confluence-mermaid-renderer-preview {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .confluence-mermaid-renderer-preview {
+    padding: 10px;
+  }
+
+  .confluence-mermaid-renderer-side-by-side {
+    display: block;
+  }
+}

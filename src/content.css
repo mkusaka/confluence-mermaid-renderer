@@ -61,7 +61,8 @@
 }
 
 .confluence-mermaid-renderer-canvas {
-  display: inline-block;
+  display: block;
+  line-height: 0;
   min-width: 100%;
 }
 

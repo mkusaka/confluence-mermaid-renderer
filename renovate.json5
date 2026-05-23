@@ -60,5 +60,12 @@
       automergeType: "pr",
       minimumReleaseAge: "7 days",
     },
+    {
+      description: "Update zizmor-action together with the zizmor CLI version it runs",
+      groupName: "workflow tooling (non-major)",
+      matchManagers: ["custom.regex", "github-actions"],
+      matchDepNames: ["zizmorcore/zizmor", "zizmorcore/zizmor-action"],
+      matchUpdateTypes: ["minor", "patch", "digest", "pinDigest", "pin"],
+    },
   ],
 }

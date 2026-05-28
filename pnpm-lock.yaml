@@ -14,7 +14,7 @@ importers:
     devDependencies:
       '@crxjs/vite-plugin':
         specifier: 2.4.0
-        version: 2.4.0(vite@8.0.14(@types/node@25.9.1)(terser@5.47.1))
+        version: 2.4.0(vite@8.0.14(@types/node@25.9.1)(terser@5.48.0))
       '@types/node':
         specifier: 25.9.1
         version: 25.9.1
@@ -25,14 +25,14 @@ importers:
         specifier: 3.8.3
         version: 3.8.3
       terser:
-        specifier: 5.47.1
-        version: 5.47.1
+        specifier: 5.48.0
+        version: 5.48.0
       typescript:
         specifier: 6.0.3
         version: 6.0.3
       vite:
         specifier: 8.0.14
-        version: 8.0.14(@types/node@25.9.1)(terser@5.47.1)
+        version: 8.0.14(@types/node@25.9.1)(terser@5.48.0)
 
 packages:
 
@@ -988,8 +988,8 @@ packages:
   stylis@4.4.0:
     resolution: {integrity: sha512-5Z9ZpRzfuH6l/UAvCPAPUo3665Nk2wLaZU3x+TLHKVzIz33+sbJqbtrYoC3KD4/uVOr2Zp+L0LySezP9OHV9yA==}
 
-  terser@5.47.1:
-    resolution: {integrity: sha512-tPbLXTI6ohPASb/1YViL428oEHu6/qv1OxqYnfaonVCFHqx4+wCd95pHrQWsL5X4pl90CTyW9piSAsS2L0VoMw==}
+  terser@5.48.0:
+    resolution: {integrity: sha512-J/9An6vs9Us6wKRriSFXBWdRZapREHqFzdNUKk0pmu804EMR6dr6winwo7e5JDxN4xahxQsuysyYFwlwj4XN/Q==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -1082,7 +1082,7 @@ snapshots:
 
   '@chevrotain/types@11.1.2': {}
 
-  '@crxjs/vite-plugin@2.4.0(vite@8.0.14(@types/node@25.9.1)(terser@5.47.1))':
+  '@crxjs/vite-plugin@2.4.0(vite@8.0.14(@types/node@25.9.1)(terser@5.48.0))':
     dependencies:
       '@rollup/pluginutils': 4.2.1
       '@webcomponents/custom-elements': 1.6.0
@@ -1100,7 +1100,7 @@ snapshots:
       react-refresh: 0.13.0
       rollup: 2.79.2
       rxjs: 7.5.7
-      vite: 8.0.14(@types/node@25.9.1)(terser@5.47.1)
+      vite: 8.0.14(@types/node@25.9.1)(terser@5.48.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -1977,7 +1977,7 @@ snapshots:
 
   stylis@4.4.0: {}
 
-  terser@5.47.1:
+  terser@5.48.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
       acorn: 8.16.0
@@ -2007,7 +2007,7 @@ snapshots:
 
   uuid@14.0.0: {}
 
-  vite@8.0.14(@types/node@25.9.1)(terser@5.47.1):
+  vite@8.0.14(@types/node@25.9.1)(terser@5.48.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -2017,4 +2017,4 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.9.1
       fsevents: 2.3.3
-      terser: 5.47.1
+      terser: 5.48.0

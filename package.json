@@ -26,7 +26,7 @@
     "oxlint": "1.68.0",
     "prettier": "3.8.3",
     "terser": "5.48.0",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vite": "8.0.16"
   }
 }

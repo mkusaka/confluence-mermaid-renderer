@@ -3,3 +3,6 @@ minimumReleaseAgeStrict: true
 strictDepBuilds: true
 trustPolicy: no-downgrade
 blockExoticSubdeps: true
+minimumReleaseAgeExclude:
+  # Renovate security update: mermaid@11.16.1
+  - mermaid@11.16.1

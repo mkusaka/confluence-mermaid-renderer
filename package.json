@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "mermaid": "11.16.1"
+    "mermaid": "11.17.2"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "2.4.0",
